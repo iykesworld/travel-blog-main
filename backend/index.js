@@ -13,11 +13,12 @@ app.use(cookieParser());
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({ limit: "10mb",extended: true }));
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://travel-blog-sigma-two.vercel.app'],
+  origin: 'https://travel-blog-sigma-two.vercel.app',
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true
 }));
 
+// 'http://localhost:5173'
 // routes
 const blogRoutes = require('./src/routers/blog.route');
 const commentRoutes = require('./src/routers/comment.route');
