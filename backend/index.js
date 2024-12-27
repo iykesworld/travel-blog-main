@@ -13,7 +13,7 @@ app.use(cookieParser());
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({ limit: "10mb",extended: true }));
 app.use(cors({
-  origin: 'https://travel-blog-sigma-two.vercel.app',
+  origin: process.env.NODE_ENV === 'production'? 'https://travel-blog-sigma-two.vercel.app' : 'http://localhost:5173',
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true
 }));
