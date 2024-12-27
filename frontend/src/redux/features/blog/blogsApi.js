@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 export const blogApi = createApi({
     reducerPath: 'blogApi',
     baseQuery: fetchBaseQuery({ 
-        baseUrl: 'https://travel-blog-server-opal.vercel.app/api',
+        baseUrl: 'https://travel-blog-server-opal.vercel.app/api/',
         credentials: 'include',
         prepareHeaders: (headers, { getState }) => {
           const token = getState().auth?.token;
