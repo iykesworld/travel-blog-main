@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({ limit: "10mb",extended: true }));
 
 
 // 'http://localhost:5173'
+
 // routes
 const blogRoutes = require('./src/routers/blog.route');
 const commentRoutes = require('./src/routers/comment.route');
