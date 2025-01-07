@@ -17,12 +17,12 @@ export const blogApi = createApi({
     tagTypes: ['Blogs'],
     endpoints: (builder) => ({
       fetchBlogs: builder.query({
-        query: ({search='', category=''}) => `/blogs?search=${search}&category=${category}`,
+        query: ({search='', category=''}) => `/?search=${search}&category=${category}`,
         providesTags: (result = [], error) =>
           result.map(({ id }) => ({ type: 'Blogs', id })).concat([{ type: 'Blogs' }]),
       }),
       fetchBlogById: builder.query({
-        query: (id) => `/blogs/${id}`,
+        query: (id) => `/${id}`,
         providesTags: (result, error, id) => [{ type: 'Blogs', id }],
       }),
       fetchRelatedBlogs: builder.query({
@@ -30,7 +30,7 @@ export const blogApi = createApi({
       }),
       postBlog: builder.mutation({
         query: (newBlog)=>({
-          url: '/blogs/create-post',
+          url: '/create-post',
           method: 'POST',
           body: newBlog,
         }),
@@ -38,7 +38,7 @@ export const blogApi = createApi({
       }),
       updateBlog: builder.mutation({
         query: ({id, ...rest})=>({
-          url: `/blogs/update-post/${id}`,
+          url: `/update-post/${id}`,
           method: 'PATCH',
           body: rest,
         }),
@@ -46,7 +46,7 @@ export const blogApi = createApi({
       }),
       deleteBlog: builder.mutation({
         query: (id)=>({
-          url: `/blogs/${id}`,
+          url: `/${id}`,
           method: 'DELETE',
         }),
         invalidatesTags: (result, error, {id})=> [{type: 'Blogs', id}, { type: 'Blogs' }]
