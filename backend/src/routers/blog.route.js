@@ -9,7 +9,6 @@ const router = express.Router();
 // create a blog post
 router.post('/create-post',verifyToken,isAdmin, async (req, res) => {
     try {
-        // console.log(req.body)
         const newPost = new Blog({...req.body, author: req.userId});  // TODO: use author: req.userId when token is verified
         await newPost.save();
         res.status(201).send({
@@ -25,9 +24,11 @@ router.post('/create-post',verifyToken,isAdmin, async (req, res) => {
 // get all blogs
 router.get('/', async (req, res) => {
     try {
-        const {search} = req.query;
-        const {category} = req.query;
-        // console.log(search);
+        const { search, category, page = 1, limit = 12 } = req.query;
+
+        // Ensure `page` and `limit` are integers
+        const pageNumber = Math.max(parseInt(page, 10) || 1, 1); // Default to 1 if invalid or not provided
+        const limitNumber = Math.max(parseInt(limit, 10) || 12, 1); // Default to 12 if invalid or not provided
         let query = {};
         if(search){
             query ={
@@ -41,8 +42,19 @@ router.get('/', async (req, res) => {
         if(category){
             query ={...query, category}
         }
-        const posts = await Blog.find(query).populate('author', 'email').sort({createdAt: -1});
-        res.status(200).send(posts);
+
+        // Calculate pagination values
+        const skip = (pageNumber - 1) * limitNumber;
+        const total = await Blog.countDocuments(query); // Total count of blogs matching the query
+        const blogs = await Blog.find(query).populate('author', 'email').sort({createdAt: -1}).skip(skip).limit(parseInt(limitNumber));
+        res.status(200).send({
+            message: 'Blogs fetched successfully',
+            total,
+            page: parseInt(page),
+            limit: parseInt(limit),
+            totalPages: Math.ceil(total / limit),
+            blogs
+        });
     } catch (error) {
         console.error('Error getting blogs', error);
         res.status(500).send({ message: 'Error getting blogs' });
