@@ -30,7 +30,6 @@ const PostAComment = () => {
       }
       try {
         const response = await postComment(newComment).unwrap();
-        console.log(response);
         alert('comment posted successfully');
         setComment('');
         refetch(); // refetch the post after comment is posted to display the new comment in the list.

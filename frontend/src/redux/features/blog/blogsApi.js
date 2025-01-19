@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 export const blogApi = createApi({
     reducerPath: 'blogApi',
     baseQuery: fetchBaseQuery({ 
-        baseUrl: 'https://travel-blog-server-opal.vercel.app/api',
+        baseUrl: 'http://localhost:5000/api',
         credentials: 'include',
         prepareHeaders: (headers, { getState }) => {
           const token = getState().auth?.token;
@@ -17,12 +17,16 @@ export const blogApi = createApi({
     tagTypes: ['Blogs'],
     endpoints: (builder) => ({
       fetchBlogs: builder.query({
-        query: ({search='', category=''}) => `/?search=${search}&category=${category}`,
+        query: ({search='', category='', page = 1, limit = 12}) => `/blogs?search=${search}&category=${category}&page=${page}&limit=${limit}`,
         providesTags: (result = [], error) =>
-          result.map(({ id }) => ({ type: 'Blogs', id })).concat([{ type: 'Blogs' }]),
+          result.posts
+            ? result.posts.map(({ id }) => ({ type: 'Blogs', id })).concat([{ type: 'Blogs' }])
+            : [{ type: 'Blogs' }],
+        // providesTags: (result = [], error) =>
+        //   result.map(({ id }) => ({ type: 'Blogs', id })).concat([{ type: 'Blogs' }]),
       }),
       fetchBlogById: builder.query({
-        query: (id) => `/${id}`,
+        query: (id) => `/blogs/${id}`,
         providesTags: (result, error, id) => [{ type: 'Blogs', id }],
       }),
       fetchRelatedBlogs: builder.query({
@@ -30,7 +34,7 @@ export const blogApi = createApi({
       }),
       postBlog: builder.mutation({
         query: (newBlog)=>({
-          url: '/create-post',
+          url: '/blogs/create-post',
           method: 'POST',
           body: newBlog,
         }),
@@ -38,7 +42,7 @@ export const blogApi = createApi({
       }),
       updateBlog: builder.mutation({
         query: ({id, ...rest})=>({
-          url: `/update-post/${id}`,
+          url: `/blogs/update-post/${id}`,
           method: 'PATCH',
           body: rest,
         }),
@@ -46,7 +50,7 @@ export const blogApi = createApi({
       }),
       deleteBlog: builder.mutation({
         query: (id)=>({
-          url: `/${id}`,
+          url: `/blogs/${id}`,
           method: 'DELETE',
         }),
         invalidatesTags: (result, error, {id})=> [{type: 'Blogs', id}, { type: 'Blogs' }]

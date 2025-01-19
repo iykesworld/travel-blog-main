@@ -35,22 +35,47 @@ const loadUserFromLocalStorage = () => {
     }
 };
 
-const initialState = loadUserFromLocalStorage();
+const initialState = {
+    ...loadUserFromLocalStorage(),
+    isAuthenticated: isTokenPresentInCookies(),
+};
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
         setUser(state, action){
-            state.user = action.payload.user;
-            localStorage.setItem('user', JSON.stringify(state.user));
+            state.user = action.payload;
+            state.isAuthenticated = true;
+            saveUserToLocalStorage(action.payload);  // Consistent storage
         },
         logout(state){
             state.user = null;
+            state.isAuthenticated = false;
             localStorage.removeItem('user');
-            document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'; // Clear the token cookie
+
+            // Improved cookie removal
+            document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; SameSite=Lax; Secure';
         }
     }
-})
+});
+
+
+// const initialState = loadUserFromLocalStorage();
+// const authSlice = createSlice({
+//     name: 'auth',
+//     initialState,
+//     reducers: {
+//         setUser(state, action){
+//             state.user = action.payload.user;
+//             localStorage.setItem('user', JSON.stringify(state.user));
+//         },
+//         logout(state){
+//             state.user = null;
+//             localStorage.removeItem('user');
+//             document.cookie = 'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'; // Clear the token cookie
+//         }
+//     }
+// })
 
 export const { setUser, logout } = authSlice.actions;
 export default authSlice.reducer;
